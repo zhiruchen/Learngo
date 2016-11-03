@@ -13,6 +13,9 @@ func main() {
 	input := bufio.NewScanner(os.Stdin)
 
 	for input.Scan() {
+		if input.Text() == "quit" {
+			break
+		}
 		counts[input.Text()]++
 	}
 

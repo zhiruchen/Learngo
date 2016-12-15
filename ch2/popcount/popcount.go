@@ -2,13 +2,11 @@ package popcount
 
 var pc [256]byte
 
-
 func init() {
 	for i := range pc {
 		pc[i] = pc[i/2] + byte(i&1)
 	}
 }
-
 
 func Popcount(x uint64) int {
 	return int(pc[(x>>(0*8))] +
@@ -20,5 +18,3 @@ func Popcount(x uint64) int {
 		pc[(x>>(6*8))] +
 		pc[(x>>(7*8))])
 }
-
-

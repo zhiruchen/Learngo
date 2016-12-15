@@ -7,9 +7,8 @@ import (
 	"os"
 )
 
-
 func main() {
-	counts := make(map[string]int)  // make构造一个空字典
+	counts := make(map[string]int) // make构造一个空字典
 	input := bufio.NewScanner(os.Stdin)
 
 	for input.Scan() {
@@ -25,6 +24,5 @@ func main() {
 		}
 
 	}
-
 
 }

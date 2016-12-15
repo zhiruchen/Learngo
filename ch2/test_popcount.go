@@ -1,10 +1,10 @@
 package main
 
 import (
+	"./popcount"
 	"fmt"
 	"os"
 	"strconv"
-	"./popcount"
 )
 
 func main() {

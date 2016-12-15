@@ -1,12 +1,10 @@
 // 回显命令字符串
 package main
 
-
 import (
 	"fmt"
 	"os"
 )
-
 
 func main() {
 	var s, sep string

@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"fmt"
 	"io/ioutil"
@@ -8,12 +7,11 @@ import (
 	"strings"
 )
 
-
 func main() {
 	counts := make(map[string]int)
 
 	for _, filename := range os.Args[1:] {
-		data, err := ioutil.ReadFile(filename)  // ReadFile返回字节切片
+		data, err := ioutil.ReadFile(filename) // ReadFile返回字节切片
 
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "dup3: %v\n", err)

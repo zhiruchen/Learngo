@@ -6,18 +6,15 @@ import (
 	"net/http"
 )
 
-
 func main() {
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/t", handler1)
 	log.Fatal(http.ListenAndServe("localhost:9999", nil))
 }
 
-
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "URL.Path = %q\n", r.URL.Path)
 }
-
 
 func handler1(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s %s %s\n", r.Method, r.URL, r.Proto)

@@ -36,12 +36,12 @@ func lissajous(out io.Writer) {
 	anim := gif.GIF{LoopCount: nframes}
 	phase := 0.0
 
-	for i:=0; i<nframes; i++ {
+	for i := 0; i < nframes; i++ {
 		rect := image.Rect(0, 0, 2*size+1, 2*size+1)
 		img := image.NewPaletted(rect, palettle)
-		for t:=0.0; t<cycles*2*math.Pi; t+=res {
+		for t := 0.0; t < cycles*2*math.Pi; t += res {
 			x := math.Sin(t)
-			y := math.Sin(t*freq+phase)
+			y := math.Sin(t*freq + phase)
 			img.SetColorIndex(size+int(x*size+0.5), size+int(y*size+0.5), blackIndex)
 		}
 

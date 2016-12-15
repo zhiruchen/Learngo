@@ -8,6 +8,7 @@ func main() {
     fmt.Println(x)
     array_example()
     slice_example()
+    map_example()
 }
 
 func array_example() {
@@ -46,5 +47,34 @@ func slice_example() {
 }
 
 func map_example() {
+    elements := make(map[string]string)
+    elements["haha"] = "You a Man"
+    elements["heihei"] = "I am a Programmer"
+    elements["code"] = "Show me the Code"
 
+    fmt.Println(elements["code"])
+    if name, ok := elements["heihei"]; ok {
+        fmt.Println(name, ok)
+    }
+
+    elements1 := map[string]string {
+        "a": "abc",
+        "b": "bcd",
+        "e": "counting star",
+    }
+
+    fmt.Println(elements1["a"])
+
+    elements2 := map[string]map[string]string {
+        "A": map[string]string{
+            "name": "A",
+            "position": "1",
+        },
+        "B": map[string]string{
+            "name": "B",
+            "position": "2",
+        },
+    }
+
+    fmt.Println(elements2["A"]["name"], elements2["A"]["position"])
 }

@@ -28,6 +28,9 @@ func main() {
 
     fmt.Println(fact(10))
 
+    // defer_panic_test()
+    defer_panic_test1()
+
 }
 
 func average(xs []float64) float64 {
@@ -68,4 +71,18 @@ func fact(x uint) uint {
     }
 
     return x * fact(x - 1)
+}
+
+func defer_panic_test() {
+    panic("PANIC")  // 停止对defer_panic_test的调用
+    str := recover()
+    fmt.Println(str)
+}
+
+func defer_panic_test1() {
+    defer func() {
+        str := recover()
+        fmt.Println(str)
+    }()
+    panic("PANIC")
 }

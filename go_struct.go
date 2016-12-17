@@ -13,6 +13,15 @@ type Rectangle struct {
     x1, x2, y1, y2 float64
 }
 
+type Person struct {
+    Name string
+}
+
+type Android struct {
+    Person
+    Model string
+}
+
 
 func main() {
     c := Circle{x: 0, y: 0, r: 5}
@@ -29,6 +38,18 @@ func main() {
 
     rect := Rectangle{1, 2, 10, 100}
     fmt.Println(rect.area())
+
+    // go embedded type
+    a := new(Android)
+    a.Talk()
+
+    b := Android{
+        Person: Person{
+            Name: "zhiru",
+        },
+        Model: "典范",
+    }
+    b.Talk()
 
 }
 
@@ -52,4 +73,8 @@ func (rect *Rectangle) area() float64 {
     w := distance(rect.x1, rect.y1, rect.x2, rect.y1)
 
     return l * w
+}
+
+func (p *Person) Talk() {
+    fmt.Println("Hi, my name is: ", p.Name)
 }

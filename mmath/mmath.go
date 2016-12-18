@@ -1,4 +1,4 @@
-package pkg_test
+package mmath
 
 // Finds the average of a series of numbers
 func Average(xs []float64) float64 {

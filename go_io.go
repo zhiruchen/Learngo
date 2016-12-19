@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 /*
 $ go run go_io.go
 test.txt 203
 在gevent中用到的主要模式是Greenlet, 它是以C扩展模块形式接入Python的轻量级协程。 Greenlet全部运行在主程序操作系统进程的内部，但它们被协作式地调度。
- */
+*/
 func main() {
 	file, err := os.Open("test.txt")
 	if err != nil {
@@ -40,6 +41,9 @@ func main() {
 
 	// 读取目录
 	read_directory()
+
+	//work path
+	work_filepath()
 }
 
 func read_file() {
@@ -75,4 +79,11 @@ func read_directory() {
 	for _, fi := range file_infos {
 		fmt.Println(fi.Name())
 	}
+}
+
+func work_filepath() {
+	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+		fmt.Println(info)
+		return nil
+	})
 }

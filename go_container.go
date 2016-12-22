@@ -1,14 +1,14 @@
 package main
 
 import (
+	"container/list"
 	"fmt"
 	"sort"
-	"container/list"
 )
 
 type Person struct {
 	Name string
-	Age int
+	Age  int
 }
 
 type ByName []Person
@@ -31,7 +31,7 @@ func main() {
 	x.PushBack(2)
 	x.PushBack(3)
 
-	for e := x.Front(); e != nil; e=e.Next() {
+	for e := x.Front(); e != nil; e = e.Next() {
 		fmt.Println(e.Value.(int))
 	}
 

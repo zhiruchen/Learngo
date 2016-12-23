@@ -3,8 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <title>chat</title>
+    <style>
+        input { display: block; }
+        ul {list-style: none;}
+
+    </style>
 </head>
 <body>
+    <ul id="messages"></ul>
     <p>Let's chat (from template)</p>
+    <form id="chat_box">
+        <textarea></textarea>
+        <input type="submit" value="Send" />
+    </form>
+
+
+
+    <script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+<script>
+    $(function() {
+        var socket = null;
+        var msgbox = $("#chat_box textarea");
+        var messages = $("#messages");
+        
+        $("#char_box").submit(function() {
+            if (!msgbox.val()) return false;
+
+            if (!socket) {
+                alert("没有websocket链接！");
+                return false;
+            }
+
+            socket.send(msgbox.val());
+            msgbox.val("");
+            return false;
+
+        });
+
+        if (!window["WebSocket"]) {
+            alert("你的浏览器不支持websocket");
+        } 
+        else {
+            socket = new WebSocket("ws://localhost:8080/room");
+            socket.onclose = function() {
+                alert("链接关闭");
+            }
+
+            socket.onmessage = function(e) {
+                alert("haha" + e.data);
+                messages.append($("<li>").text(e.data));
+            }
+        }
+    });
+</script>
 </body>
+
 </html>

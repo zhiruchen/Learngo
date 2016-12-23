@@ -11,29 +11,38 @@ const (
 	messageBufferSize = 256
 )
 
-
 type room struct {
-	forward chan []byte   // 保持到来的消息
-	join chan *client     // 希望加入房间的客户端
-	leave chan *client    // 希望离开房间的客户端
+	forward chan []byte      // 保持到来的消息
+	join    chan *client     // 希望加入房间的客户端
+	leave   chan *client     // 希望离开房间的客户端
 	clients map[*client]bool // 保持房间中所有客户端
+}
+
+// 创建一个新房间
+func newRoom() *room {
+	return &room{
+		forward: make(chan []byte),
+		join: make(chan *client),
+		leave: make(chan *client),
+		clients: make(map[*client]bool),
+	}
 }
 
 func (r *room) run() {
 	for {
 		select {
-		case client := <- r.join:
+		case client := <-r.join:
 			r.clients[client] = true
-		case client := <- r.leave:
+		case client := <-r.leave:
 			delete(r.clients, client)
 			close(client.send)
-		case msg := <- r.forward:
+		case msg := <-r.forward:
 			for client := range r.clients {
 				select {
 				case client.send <- msg:
-					// send msg
+				// send msg
 				default:
-					// 发送失败
+				// 发送失败
 					delete(r.clients, client)
 					close(client.send)
 				}
@@ -44,7 +53,7 @@ func (r *room) run() {
 
 var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize, WriteBufferSize: messageBufferSize}
 
-func (r *room) ServeHttp(w http.ResponseWriter, req *http.Request) {
+func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)  // 升级 http -> websocket 协议
 	if err != nil {
 		log.Fatal("Serve Err", err)
@@ -57,7 +66,9 @@ func (r *room) ServeHttp(w http.ResponseWriter, req *http.Request) {
 	}
 
 	r.join <- client
-	defer func() { r.leave <- client }()
+	defer func() {
+		r.leave <- client
+	}()
 	go client.write()
 	client.read()
 }

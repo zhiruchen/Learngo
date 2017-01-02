@@ -5,15 +5,18 @@ import (
 	"net/http"
 	"time"
 	"log"
+	"encoding/json"
 	"github.com/justinas/alice"
+	"github.com/gorilla/context"
 )
 
 func main() {
-		commonHandlers := alice.New(loggingHandler, recoverHandler)
+	commonHandlers := alice.New(context.ClearHandler, loggingHandler, recoverHandler)
 
-		http.Handle("/about", commonHandlers.ThenFunc(aboutHandler))
-		http.Handle("/", commonHandlers.ThenFunc(indexHandler))
-		http.ListenAndServe(":8080", nil)
+	http.Handle("/admin", commonHandlers.Append(authHandler).ThenFunc(adminHandler))
+	http.Handle("/about", commonHandlers.ThenFunc(aboutHandler))
+	http.Handle("/", commonHandlers.ThenFunc(indexHandler))
+	http.ListenAndServe(":8080", nil)
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +28,7 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-// Loging middleware
+// Logging middleware
 func loggingHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
@@ -53,3 +56,28 @@ func recoverHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
+// authentication middleware
+func authHandler(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		authToken := r.Header().Get("Authorization")
+		user, err := getUser(authToken)
+
+		if err != nil {
+			http.Error(w, http.StatusText(401), 401)
+			return
+		}
+
+		context.Set(r, "user", user)
+		next.ServeHTTP(w, r)
+
+	}
+
+	return http.HandlerFunc(fn)
+}
+
+//
+func adminHandler(w http.ResponseWriter, r *http.Request) {
+	user := context.Get(r, "user")
+	json.NewEncoder(w).Encode(user)
+
+}

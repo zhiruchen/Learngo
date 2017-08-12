@@ -2,6 +2,7 @@ package cmap
 
 import (
 	"sync"
+	"sync/atomic"
 )
 
 const DEFAULT_BUCKET_LOAD_FACTOR = 0.75
@@ -42,4 +43,42 @@ func newSegment(bn int, pr PairRedistributor) Segment {
 		bucketsLen:        bn,
 		pairRedistributor: pr,
 	}
+}
+
+func (s *segment) Put(p Pair) (bool, error) {
+	s.lock.Lock()
+
+	b := s.buckets[int(p.Hash()%uint64(s.bucketsLen))]
+	ok, err := b.Put(p, nil)
+
+	if ok {
+		newTotal := atomic.AddUint64(&s.pairCount, 1)
+		s.redistribe(newTotal, b.size())
+	}
+	s.lock.Unlock()
+	return ok, err
+}
+
+func (s *segment) Get(key string) Pair {
+	return s.GetWithHash(key, hash(key))
+}
+
+func (s *segment) GetWithHash(key string, keyHash uint64) Pair {
+	s.lock.Lock()
+	b := s.buckets[int(keyHash%uint64(s.bucketsLen))]
+	s.lock.Unlock()
+	return b.Get(key)
+}
+
+func (s *segment) Delete(key string) bool {
+	s.lock.Lock()
+	b := s.buckets[int(hash(key)%uint64(s.bucketsLen))]
+	ok := b.Delete(key, nil)
+	if ok {
+		newTotal := atomic.AddUint64(&s.pairCount, ^uint64(0))
+		s.redistribute(newTotal, b.Size())
+	}
+	s.lock.Unlock()
+
+	return ok
 }

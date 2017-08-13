@@ -122,3 +122,29 @@ func (b *bucket) Delete(key string, lock sync.Locker) bool {
 	atomic.AddUint64(&b.size, ^uint64(0))
 	return true
 }
+
+func (b *bucket) Get(key string) Pair {
+	firstPair := b.GetFirstPair()
+
+	if firstPair == nil {
+		return nil
+	}
+
+	for v := firstPair; v != nil; v = v.Next() {
+		if v.Key() == key {
+			return v
+		}
+	}
+
+	return nil
+}
+
+func (b *bucket) Clear(lock sync.Locker) {
+	if lock != nil {
+		lock.Lock()
+		defer lock.Unlock()
+	}
+
+	atomic.StoreUint64(&b.size, 0)
+	b.firstValue.Store(placeHolder)
+}
